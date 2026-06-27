@@ -30,3 +30,14 @@ NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/catalog
 APP_URL=
 WEBHOOK_URL=
 ```
+
+## 🔗 Webhook SII
+
+El webhook funciona en producción vía Vercel. Al generar una boleta:
+
+1. Se crea en Supabase con status `pending`
+2. Se hace POST a Pipedream con `documentId` y `callbackUrl`
+3. Pipedream llama de vuelta a `/api/webhooks/sii`
+4. La boleta se actualiza con `siiCode`, `pdfUrl` y status `issued`
+
+Para evidenciarlo: genera una boleta en el deploy de producción y verás el estado cambiar de **Pendiente** a **Emitida** automáticamente.
