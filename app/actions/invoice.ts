@@ -36,7 +36,7 @@ export async function generateInvoice(items: CartItem[]): Promise<number> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      callbackUrl: process.env.APP_URL + '/webhooks/sii',
+      callbackUrl: process.env.APP_URL + '/api/webhooks/sii',
       documentId: invoice.id,
     }),
   })
