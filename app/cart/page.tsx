@@ -139,7 +139,7 @@ export default function CartPage() {
         disabled={isPending}
         className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
       >
-        {isPending ? 'Generando...' : 'Generar boleta'}
+        {isPending ? 'Generando...' : 'Comprar'}
       </button>
     </div>
   )

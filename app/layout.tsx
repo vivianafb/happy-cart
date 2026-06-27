@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider afterSignOutUrl="/catalog">
       <html lang="es" className={geist.variable}>
         <body className="min-h-screen bg-gray-50 font-[family-name:var(--font-geist)]">
           <Navbar />
