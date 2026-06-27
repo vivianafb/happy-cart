@@ -19,7 +19,9 @@ export default function Navbar() {
             </Link>
           </Show>
         </div>
+        
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <CartLink />
           <Show when="signed-out">
             <SignInButton>
               <button className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors">
@@ -32,8 +34,8 @@ export default function Navbar() {
               </button>
             </SignUpButton>
           </Show>
+         
           <Show when="signed-in">
-            <CartLink />
             <UserButton />
           </Show>
         </div>
