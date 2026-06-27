@@ -11,7 +11,7 @@ export default async function InvoicePage() {
   const { data: invoices } = await supabaseAdmin
     .from('invoice')
     .select('id, created_at, status, total_value')
-    .eq('userId', userId)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false })
 
   return (

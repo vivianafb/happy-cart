@@ -12,7 +12,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
     .from('invoice')
     .select('*')
     .eq('id', id)
-    .eq('userId', userId)
+    .eq('user_id', userId)
     .single()
 
   if (!invoice) notFound()

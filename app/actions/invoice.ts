@@ -15,10 +15,11 @@ export async function generateInvoice(items: CartItem[]): Promise<number> {
 
   const { data: invoice, error: invoiceError } = await supabaseAdmin
     .from('invoice')
-    .insert({ net_value, taxes, total_value, userId })
+    .insert({ net_value, taxes, total_value, user_id: userId, status: 'pending' })
     .select('id')
     .single()
 
+  console.log('invoiceError:', invoiceError)
   if (invoiceError || !invoice) throw new Error('Failed to create invoice')
 
   const { error: itemsError } = await supabaseAdmin.from('invoice_items').insert(
@@ -30,7 +31,18 @@ export async function generateInvoice(items: CartItem[]): Promise<number> {
     }))
   )
 
+  console.log('itemsError:', itemsError)
   if (itemsError) throw new Error('Failed to create invoice items')
+
+  console.log('Sending to Pipedream:', { callbackUrl: process.env.APP_URL + '/webhooks/sii', documentId: invoice.id })
+  await fetch(process.env.WEBHOOK_URL!, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      callbackUrl: process.env.APP_URL + '/webhooks/sii',
+      documentId: invoice.id,
+    }),
+  })
 
   return invoice.id
 }
