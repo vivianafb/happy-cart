@@ -48,13 +48,13 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         </div>
         <div className="flex items-center gap-3">
           <span className="text-gray-500 w-28 shrink-0">Código SII</span>
-          <span className="text-gray-900">{invoice.sii_code ?? 'Pendiente'}</span>
-        </div>
+          <span className="text-gray-900">{invoice.siiCode ?? 'Pendiente'}</span>
+        </div>  
         <div className="flex items-center gap-3">
           <span className="text-gray-500 w-28 shrink-0">PDF</span>
-          {invoice.pdf_url ? (
+          {invoice.pdfUrl ? (
             <a
-              href={invoice.pdf_url}
+              href={invoice.pdfUrl}
               target="_blank" 
               rel="noopener noreferrer"
               className="text-gray-900 underline hover:text-gray-600"
