@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 
 export default function Navbar() {
   return (
@@ -12,24 +12,31 @@ export default function Navbar() {
           <Link href="/catalog" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
             Catálogo
           </Link>
-          <SignedIn>
+          <Show when="signed-in">
             <Link href="/cart" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Carrito
             </Link>
             <Link href="/invoice" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Boletas
             </Link>
-          </SignedIn>
+          </Show>
         </div>
         <div className="flex items-center gap-4">
-          <SignedOut>
-            <Link href="/sign-in" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-              Iniciar sesión
-            </Link>
-          </SignedOut>
-          <SignedIn>
+          <Show when="signed-out">
+            <SignInButton>
+              <button className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                Iniciar sesión
+              </button>
+            </SignInButton>
+            <SignUpButton>
+              <button className="text-sm px-3 py-1.5 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition-colors">
+                Registrarse
+              </button>
+            </SignUpButton>
+          </Show>
+          <Show when="signed-in">
             <UserButton />
-          </SignedIn>
+          </Show>
         </div>
       </div>
     </nav>
