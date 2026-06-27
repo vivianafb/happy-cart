@@ -16,7 +16,6 @@ export const config = {
   matcher: [
     '/(api|trpc)(.*)',
     '/__clerk/:path*',
-    '/webhooks/(.*)',
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|webhooks).*)',
   ],
 }
