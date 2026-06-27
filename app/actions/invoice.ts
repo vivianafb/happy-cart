@@ -35,7 +35,7 @@ export async function generateInvoice(items: CartItem[]): Promise<number> {
   if (itemsError) throw new Error('Failed to create invoice items')
 
   console.log('Sending to Pipedream:', { callbackUrl: process.env.APP_URL + '/webhooks/sii', documentId: invoice.id })
-  await fetch(process.env.WEBHOOK_URL!, {
+  const webhookRes = await fetch(process.env.WEBHOOK_URL!, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -43,6 +43,7 @@ export async function generateInvoice(items: CartItem[]): Promise<number> {
       documentId: invoice.id,
     }),
   })
+  console.log('Pipedream response status:', webhookRes.status)
 
   return invoice.id
 }
