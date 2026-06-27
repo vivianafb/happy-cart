@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
+import CartLink from '@/app/components/CartLink'
 
 export default function Navbar() {
   return (
@@ -13,9 +14,6 @@ export default function Navbar() {
             Catálogo
           </Link>
           <Show when="signed-in">
-            <Link href="/cart" className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors shrink-0">
-              Carrito
-            </Link>
             <Link href="/invoice" className="text-xs sm:text-sm text-gray-500 hover:text-gray-900 transition-colors shrink-0">
               Boletas
             </Link>
@@ -35,6 +33,7 @@ export default function Navbar() {
             </SignUpButton>
           </Show>
           <Show when="signed-in">
+            <CartLink />
             <UserButton />
           </Show>
         </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { formatCLP } from '@/lib/format'
@@ -10,18 +10,22 @@ type CartItem = { id: number; name: string; price: number; quantity: number }
 
 export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([])
-  const [isPending, startTransition] = useTransition()
+  const [loaded, setLoaded] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [confirmId, setConfirmId] = useState<number | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const stored = sessionStorage.getItem('cart')
     if (stored) setCart(JSON.parse(stored))
+    setLoaded(true)
   }, [])
 
   function updateCart(updated: CartItem[]) {
     setCart(updated)
     sessionStorage.setItem('cart', JSON.stringify(updated))
+    window.dispatchEvent(new Event('cartUpdated'))
   }
 
   function increment(id: number) {
@@ -57,13 +61,21 @@ export default function CartPage() {
   const taxes = total_value * 0.15
   const net_value = total_value - taxes
 
-  function handleGenerateInvoice() {
-    startTransition(async () => {
+  async function handleGenerateInvoice() {
+    setError(null)
+    setLoading(true)
+    try {
       const invoiceId = await generateInvoice(cart)
       sessionStorage.removeItem('cart')
+      window.dispatchEvent(new Event('cartUpdated'))
       router.push(`/invoice/${invoiceId}`)
-    })
+    } catch {
+      setError('No se pudo generar la boleta. Intenta nuevamente.')
+      setLoading(false)
+    }
   }
+
+  if (!loaded) return null
 
   if (cart.length === 0) {
     return (
@@ -124,14 +136,16 @@ export default function CartPage() {
                   <div className="flex items-center justify-center gap-2">
                     <button
                       onClick={() => decrement(item.id)}
-                      className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50"
+                      disabled={loading}
+                      className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       −
                     </button>
                     <span className="w-6 text-center font-medium">{item.quantity}</span>
                     <button
                       onClick={() => increment(item.id)}
-                      className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50"
+                      disabled={loading}
+                      className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       +
                     </button>
@@ -143,7 +157,8 @@ export default function CartPage() {
                 <td className="px-4 py-3 text-center">
                   <button
                     onClick={() => requestRemove(item.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors"
+                    disabled={loading}
+                    className="text-gray-400 hover:text-red-500 transition-colors disabled:pointer-events-none disabled:opacity-40"
                     aria-label="Eliminar"
                   >
                     ✕
@@ -162,7 +177,8 @@ export default function CartPage() {
               <p className="font-medium text-gray-900">{item.name}</p>
               <button
                 onClick={() => requestRemove(item.id)}
-                className="text-gray-400 hover:text-red-500 transition-colors ml-2"
+                disabled={loading}
+                className="text-gray-400 hover:text-red-500 transition-colors ml-2 disabled:pointer-events-none disabled:opacity-40"
                 aria-label="Eliminar"
               >
                 ✕
@@ -172,14 +188,16 @@ export default function CartPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => decrement(item.id)}
-                  className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50"
+                  disabled={loading}
+                  className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   −
                 </button>
                 <span className="w-6 text-center font-medium">{item.quantity}</span>
                 <button
                   onClick={() => increment(item.id)}
-                  className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50"
+                  disabled={loading}
+                  className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded text-xs hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   +
                 </button>
@@ -210,12 +228,22 @@ export default function CartPage() {
             </div>
           </div>
 
+          {error && (
+            <p className="text-sm text-red-600 mb-3">{error}</p>
+          )}
+
           <button
             onClick={handleGenerateInvoice}
-            disabled={isPending}
-            className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            disabled={loading}
+            className="w-full py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
-            {isPending ? 'Generando...' : 'Comprar'}
+            {loading && (
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+            )}
+            {loading ? 'Generando boleta...' : 'Generar boleta'}
           </button>
         </div>
       </div>

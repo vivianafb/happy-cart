@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect, notFound } from 'next/navigation'
 import { supabaseAdmin } from '@/lib/supabase'
 import { formatCLP } from '@/lib/format'
+import InvoiceStatusPoller from '@/app/components/InvoiceStatusPoller'
 
 export default async function InvoiceDetailPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params
@@ -33,39 +34,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         })}
       </p>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6 text-sm space-y-3">
-        <div className="flex items-center gap-3">
-          <span className="text-gray-500 w-24 shrink-0">Estado</span>
-          <span
-            className={`px-2 py-0.5 rounded text-xs font-medium ${
-              invoice.status === 'issued'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-yellow-100 text-yellow-800'
-            }`}
-          >
-            {invoice.status === 'issued' ? 'Emitida' : 'Pendiente'}
-          </span>
-        </div>
-        <div className="flex items-start gap-3">
-          <span className="text-gray-500 w-24 shrink-0">Código SII</span>
-          <span className="text-gray-900 break-all">{invoice.siiCode ?? 'Pendiente'}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-gray-500 w-24 shrink-0">PDF</span>
-          {invoice.pdfUrl ? (
-            <a
-              href={invoice.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-900 underline hover:text-gray-600"
-            >
-              Ver PDF
-            </a>
-          ) : (
-            <span className="text-gray-400">Pendiente</span>
-          )}
-        </div>
-      </div>
+      <InvoiceStatusPoller
+        invoiceId={invoice.id}
+        initial={{ status: invoice.status, siiCode: invoice.siiCode, pdfUrl: invoice.pdfUrl }}
+      />
 
       <div className="hidden sm:block bg-white border border-gray-200 rounded-lg overflow-hidden mb-6">
         <table className="w-full text-sm">

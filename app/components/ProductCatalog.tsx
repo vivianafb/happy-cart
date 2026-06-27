@@ -18,6 +18,7 @@ export default function ProductCatalog({ products }: { products: Product[] }) {
   function updateCart(updated: CartItem[]) {
     setCart(updated)
     sessionStorage.setItem('cart', JSON.stringify(updated))
+    window.dispatchEvent(new Event('cartUpdated'))
   }
 
   function getQuantity(id: number) {
@@ -49,17 +50,7 @@ export default function ProductCatalog({ products }: { products: Product[] }) {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Catálogo</h1>
-        <Link
-          href="/cart"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm rounded-md hover:bg-gray-700 transition-colors"
-        >
-          Carrito
-          {totalItems > 0 && (
-            <span className="bg-white text-gray-900 rounded-full text-xs font-bold px-1.5 py-0.5 leading-none">
-              {totalItems}
-            </span>
-          )}
-        </Link>
+       
       </div>
 
       {products.length === 0 ? (
