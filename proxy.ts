@@ -4,6 +4,9 @@ import type { NextRequest } from 'next/server'
 const isProtected = createRouteMatcher(['/cart(.*)', '/invoice(.*)'])
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
+  if (req.nextUrl.pathname.startsWith('/webhooks')) {
+    return
+  }
   if (isProtected(req)) {
     await auth.protect()
   }
