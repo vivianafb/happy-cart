@@ -6,11 +6,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const { documentId, status, sii_code, pdf_url } = body
+  const { documentId, status, siiCode, pdfUrl } = body
 
   await supabaseAdmin
     .from('invoice')
-    .update({ status, sii_code: sii_code, pdf_url: pdf_url })
+    .update({ status, siiCode, pdfUrl })
     .eq('id', documentId)
 
   return new Response('OK', { status: 200 })
